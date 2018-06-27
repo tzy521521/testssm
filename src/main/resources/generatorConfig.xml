@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
 <generatorConfiguration>
     <!-- <generatorConfiguration>(有严格的配置顺序) 下可以配置3种子元素<properties>、<classPathEntry> 和<context>
-         (特别注意: 该配置文件只能放在classpath目录下，放在classpath下的任何包中都不可以。)
+         (特别注意: 该配置文件可以在mybatis-generator-maven-plugin中配置路径（只能是绝对路径？），否则只能放在classpath目录下)
     -->
     
     <!-- <properties>      可选，最多配置1个
@@ -72,6 +72,7 @@
              该元素有1个必选属性：
                      type： 实现插件的类的完全限定名。该类必须实现该接口 org.mybatis.generator.api.Plugin, 必须有一个公开默认的构造函数。注意，继承org.mybatis.generator.api.PluginAdapter这个适配器类比继承接口更容易扩展。
         -->
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
 
         <!-- <commentGenerator>  可选，在<context>下最多配置一个。
             该元素用来定义~注释生成器~的属性。~注释生成器~是用来给通过MBG生成的多种元素（Java属性，Java方法，XML元素等等）生成注释。默认的~注释生成器~将JavaDoc注释添加到所有生成的Java元素上，从而使Eclipse插件可以使用合并Java的功能。 此外，注释还会添加到每一个生成的XML元素中。 注释的目的还在于告诉用户这个元素是生成的，并且有可能重新生成（也就是说 - 他们不应该被修改）。
@@ -97,8 +98,7 @@
                 dateForma：           将日期写入生成的注释时要使用的日期格式字符串。这个字符串将用于构造java.text.SimpleDateFormat对象。这个对象的任何有效的字符串形式都可以在这里指定。默认情况下，日期字符串将使用来自java.util.Date上的toString()方法。
                         警告，如果suppressAllComments或者suppressDate的值是true,这个选项将会被忽略并且1.3.4以上版本有效。
             -->
-            <property name="addRemarkComments" value="true"/>
-            <property name="dateFormat" value="该注释于yyyy年MM月dd日HH时mm分ss秒生成"/>
+            <property name="suppressAllComments" value="true"/>
         </commentGenerator>
 
         <!-- <jdbcConnection>    必选，在<context>下只能有1个。
@@ -164,14 +164,13 @@
         -->
         <javaModelGenerator targetPackage="com.tzy777.testssm.entity" targetProject="src/main/java">
             <!-- 该元素支持以下5个<property>子元素属性：
-                 constructorBased:  默认为false。该属性只对MyBatis3有效，如果true就会使用构造方法入参，如果false就会使用setter方式。这个属性会被<table>中的<corresponding>属性重写。
+                 constructorBased:  默认为false。如果true就会使用构造方法入参，如果false就会使用setter方式。该属性只能应用于MyBatis3，在iBATIS2中失效。这个属性会被<table>中的相应的属性重写。
                  enableSubPackages: 默认为false。如果true，MBG会根据catalog和schema来生成子包。如果false就会直接用targetPackage属性。
-                 immutable:         默认为false。该属性只对MyBatis3有效，用来配置实体类属性是否可变，如果设置为true，那么constructorBased不管设置成什么，都会使用构造方法入参，并且不会生成setter方法。如果为false，实体类属性就可以改变。该属性可以被<table>中的 <corresponding>属性重写。
+                 immutable:         默认为false。用来配置实体类属性是否可变，如果设置为true，那么constructorBased不管设置成什么，都会使用构造方法入参，并且不会生成setter方法。如果为false，实体类属性就可以改变。该属性只能应用于MyBatis3，在iBATIS2中失效。这个属性会被<table>中的相应的属性重写。
                  rootClass:         设置所有实体类的基类。如果设置，需要使用类的全限定名称。并且如果MBG能够加载rootClass，那么MBG不会覆盖和父类中完全匹配的属性。匹配规则：属性名完全相同、属性类型相同、属性有getter方法、属性有setter方法
                  trimStrings:       默认值为false。是否对数据库查询结果进行trim操作，如果设置为true就会生成类似这样public void setUsername(String username) {this.username = username == null ? null : username.trim();}的setter方法。可以被<table>或者<columnOverride>重写。
              -->
-            <property name="enableSubPackages" value="false"/>
-            <property name="immutable" value="false"/>
+            <property name="constructorBased" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
@@ -267,8 +266,9 @@
                    delimitIdentifiers： 默认false。是否给标识符增加分隔符。但是当catalog,schema或tableName中包含空白时，默认为true
                    delimitAllColumns：  默认false。是否对所有列添加分隔符。 这是一种给每个列添加<columnOverride>来指定列需要被分隔的替代方式。 这对类似PostgreSQL这种使用小写标识符的数据库很有用。分隔符在 <context> 元素上指定。
         -->
-        <table tableName="%" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false" enableUpdateByExample="false">
-            <!-- 该元素包含13个可用的<property>子元素，可选属性为：
+        <!--<table tableName="%" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false" enableUpdateByExample="false">-->
+            <!-- 该元素包含13个？？可用的<property>子元素，可选属性为：
+                 domainObjectName：
                  constructorBased:            默认值是false。此属性用于选择代码生成器是否生成接受类中的每个字段的值的类的构造函数。此外，SQL结果映射也会为每个字段生成使用构造方法而不是"setter"的方式。 和<javaModelGenerator>中的属性含义一样。
                                               此属性仅适用于MyBatis3，iBATIS2将会被忽略。如果"immutable"属性设置为"true"，这个属性将会被忽略。
                  ignoreQualifiersAtRuntime:   默认值是false。如果设置为true，MBG不会将schema或catalog添加到生成SQL中的表名上。如果您有几个schemas中的表具有相同的名称，这是非常有用的。您可以使用MBG生成基于在一个schema上的表，但是运行时不包含schema。
@@ -329,7 +329,7 @@
                                 searchString:定义将被替换的字符串的正则表达式。
                        该元素有1个可选属性：
                                 replaceString:这是一个用来替换搜索字符串列每一个匹配项的字符串。如果没有指定，就会使用空字符串。
-                  3.<columnOverride> 该元素最多配置一个
+                  3.<columnOverride> 该元素可以配置多个
                        MBG使用<columnOverride>元素将映射表中某些属性默认计算的值更改为指定的值。
                        该元素有1个必选属性:
                                 column:   要重写的列名。
@@ -350,6 +350,11 @@
                                 delimitedColumnName: 匹配列名的时候是否区分大小写。如果为true则区分。默认值为false，不区分大小写。
                   5.<ignoreColumnsByRegex>
              -->
+        <!--</table>-->
+        <table tableName="book" >
+            <columnOverride column="book_id" javaType="long"/>
+            <columnOverride column="name" javaType="String"/>
+            <columnOverride column="number" javaType="int"/>
         </table>
     </context>
 </generatorConfiguration>

@@ -100,6 +100,7 @@
         <!-- 作为DOM对象的配置 -->
         <configuration>
           <verbose>true</verbose>
+          <!-- 使生成mapper接口和实体类只有一个文件，不会出现后面加数字的情况 -->
           <overwrite>true</overwrite>
         </configuration>
         <!--  -->
