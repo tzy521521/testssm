@@ -20,8 +20,15 @@ public class BookMapperTest extends BaseTest {
 
     @Test
     public void selectByPrimaryKey() {
-        long bookID=1000;
-        Book book=bookMapper.selectByPrimaryKey(bookID);
+        long bookId=1000;
+        Book book=bookMapper.selectByPrimaryKey(bookId);
         System.out.println(book);
+    }
+
+    @Test
+    public void reduceNumber(){
+        long bookId=1000;
+        int number=bookMapper.reduceNumber(bookId);
+        System.out.println(number);
     }
 }
