@@ -3,7 +3,11 @@ package com.tzy777.testssm.service.impl;
 import com.tzy777.testssm.dao.AppointmentMapper;
 import com.tzy777.testssm.dao.BookMapper;
 import com.tzy777.testssm.dto.AppointExecution;
+import com.tzy777.testssm.entity.Appointment;
 import com.tzy777.testssm.entity.Book;
+import com.tzy777.testssm.enums.AppointStateEnum;
+import com.tzy777.testssm.exception.AppointException;
+import com.tzy777.testssm.exception.NoNumberException;
 import com.tzy777.testssm.service.BookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,7 +41,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> getList() {
-        return null;
+        return bookMapper.selectAll();
     }
 
     /**
@@ -47,8 +52,30 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public AppointExecution appoint(Long bookId, Long studentId) {
-        // 减库存
-        int update = bookMapper.reduceNumber(bookId);
-        return null;
+        try {
+            // 减库存
+            int update = bookMapper.reduceNumber(bookId);
+            if (update <= 0) {
+                throw new NoNumberException("no number");
+            }else {
+                // 执行预约操作
+                int insert = appointmentMapper.insertAppointment(bookId,studentId,new Date());
+                if (insert<=0){
+                    throw new RuntimeException("repeat appoint");
+                }else {
+                    Appointment appointment=appointmentMapper.selectByPrimaryKey(bookId,studentId);
+                    return new AppointExecution(bookId,AppointStateEnum.SUCCESS,appointment);
+                }
+            }
+            // 要先于catch Exception异常前先catch住再抛出，不然自定义的异常也会被转换为AppointException，导致控制层无法具体识别是哪个异常
+        }catch (NoNumberException e1){
+            throw e1;
+        }catch (RuntimeException e2){
+            throw e2;
+        }catch (Exception e){
+            logger.error(e.getMessage(), e);
+            // 所有编译期异常转换为运行期异常
+            throw new AppointException("appoint inner error:" + e.getMessage());
+        }
     }
 }
