@@ -266,7 +266,7 @@
                    delimitIdentifiers： 默认false。是否给标识符增加分隔符。但是当catalog,schema或tableName中包含空白时，默认为true
                    delimitAllColumns：  默认false。是否对所有列添加分隔符。 这是一种给每个列添加<columnOverride>来指定列需要被分隔的替代方式。 这对类似PostgreSQL这种使用小写标识符的数据库很有用。分隔符在 <context> 元素上指定。
         -->
-        <!--<table tableName="%" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false" enableUpdateByExample="false">-->
+        <table tableName="%" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false" enableUpdateByExample="false">
             <!-- 该元素包含13个？？可用的<property>子元素，可选属性为：
                  domainObjectName：
                  constructorBased:            默认值是false。此属性用于选择代码生成器是否生成接受类中的每个字段的值的类的构造函数。此外，SQL结果映射也会为每个字段生成使用构造方法而不是"setter"的方式。 和<javaModelGenerator>中的属性含义一样。
@@ -350,11 +350,6 @@
                                 delimitedColumnName: 匹配列名的时候是否区分大小写。如果为true则区分。默认值为false，不区分大小写。
                   5.<ignoreColumnsByRegex>
              -->
-        <!--</table>-->
-        <table tableName="book" >
-            <columnOverride column="book_id" javaType="long"/>
-            <columnOverride column="name" javaType="String"/>
-            <columnOverride column="number" javaType="int"/>
         </table>
     </context>
 </generatorConfiguration>
